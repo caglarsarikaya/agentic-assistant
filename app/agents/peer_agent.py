@@ -1,5 +1,5 @@
-"""Simple rule-based planner that routes tasks to other agents."""
-from typing import Any, Dict, List
+"""Planner that routes tasks to other agents."""
+from typing import Any, List
 
 from app.agents.base import BaseAgent
 
@@ -7,8 +7,7 @@ from app.agents.base import BaseAgent
 class PeerAgent(BaseAgent):
     def __init__(self, short_memory, long_memory, agents: List[BaseAgent]):
         super().__init__("peer", "Planner and router", short_memory, long_memory)
-        # Map agent name to instance
-        self.agents: Dict[str, BaseAgent] = {agent.name: agent for agent in agents}
+        self.agents: List[BaseAgent] = agents
 
     def execute(self, session_id: str, task: str) -> Any:
         self.log(session_id, f"planner received: {task}")
@@ -20,21 +19,12 @@ class PeerAgent(BaseAgent):
         return results
 
     def plan(self, task: str) -> List[BaseAgent]:
-        lowered = task.lower()
-        agents = []
-        if any(word in lowered for word in ["weather", "search"]):
-            if "search" in self.agents:
-                agents.append(self.agents["search"])
-        if any(word in lowered for word in ["calendar", "event"]):
-            if "calendar" in self.agents:
-                agents.append(self.agents["calendar"])
-        if any(word in lowered for word in ["text", "message", "whatsapp"]):
-            if "whatsapp" in self.agents:
-                agents.append(self.agents["whatsapp"])
+        agents: List[BaseAgent] = [a for a in self.agents if a is not self and a.can_handle(task)]
+        llm = next((a for a in self.agents if a.name == "llm"), None)
         if not agents:
-            agents.append(self.agents.get("llm"))
+            if llm:
+                agents = [llm]
         else:
-            # always include llm for multi-agent explanation
-            if "llm" in self.agents:
-                agents.insert(0, self.agents["llm"])
-        return [a for a in agents if a]
+            if llm and llm not in agents:
+                agents.insert(0, llm)
+        return agents

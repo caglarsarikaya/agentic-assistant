@@ -20,6 +20,11 @@ class BaseAgent(ABC):
         self.long_memory.add(session_id, message)
 
     @abstractmethod
+    def can_handle(self, task: str) -> bool:
+        """Return True if this agent should handle the task."""
+        raise NotImplementedError
+
+    @abstractmethod
     def execute(self, session_id: str, task: str) -> Any:
         """Execute the task and return a result."""
         raise NotImplementedError

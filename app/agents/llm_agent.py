@@ -19,6 +19,9 @@ class LLMAgent(BaseAgent):
         api_key = os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key) if api_key and OPENAI_AVAILABLE else None
 
+    def can_handle(self, task: str) -> bool:
+        return True
+
     def execute(self, session_id: str, task: str) -> Any:
         self.log(session_id, f"LLM input: {task}")
         if self.client:
