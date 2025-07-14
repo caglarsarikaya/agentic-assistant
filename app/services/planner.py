@@ -20,6 +20,8 @@ class PlannerService:
         self.search = SearchAgent(short, long)
         self.calendar = CalendarAgent(short, long)
         self.whatsapp = WhatsAppAgent(short, long)
+        # Register agents here. New agents can be added without modifying the
+        # planner logic as long as they implement `can_handle`.
         agents: List[BaseAgent] = [self.llm, self.search, self.calendar, self.whatsapp]
         self.peer = PeerAgent(short, long, agents)
 

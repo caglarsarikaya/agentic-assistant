@@ -6,7 +6,8 @@ A multi-agent system with memory and task routing capabilities built with FastAP
 
 - **Multi-Agent Architecture**: Different specialized agents for various tasks
 - **Memory Management**: Short-term session memory and long-term MongoDB storage
-- **Task Routing**: LLM-based planner for intelligent task distribution
+- **Task Routing**: Planner automatically routes tasks to agents using each
+  agent's `can_handle` logic
 - **Web Search**: Integration with Serper.dev for web search capabilities
 - **Calendar Integration**: Google Calendar integration for scheduling tasks
 
